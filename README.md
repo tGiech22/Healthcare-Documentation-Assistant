@@ -17,7 +17,9 @@ evaluation.
 
 ## Status
 
-🚧 Early development. See the roadmap below for planned phases.
+🚧 Early development. **Phases 0 & 1 are implemented and runnable** (synthetic data
+generation, EDA, note-type classifier, and a PHI-detection baseline). Phases 2–5 are
+planned — see the roadmap below.
 
 ## Data
 
@@ -48,9 +50,56 @@ This project uses **only** synthetic or de-identified public data:
 - **Summarization:** fine-tuned seq2seq (BART/T5/PEGASUS) and an LLM API (Claude)
 - **App:** Streamlit (demo) or FastAPI (service)
 
+## Project Structure
+
+```
+src/healthcare_assistant/
+  config.py              # paths, constants, random seed
+  data/
+    generate_synthetic.py  # synthetic clinical notes w/ PHI ground truth
+    loader.py              # load notes + stratified train/val/test split
+  eda/explore.py          # class balance, note lengths, top tokens
+  models/
+    classifier.py         # TF-IDF + logistic regression note-type classifier
+    phi_detector.py       # rule-based PHI detection + redaction
+scripts/
+  00_generate_data.py     # Phase 0: create the dataset
+  01_eda.py               # Phase 0: exploratory analysis (saves figures)
+  02_train_classifier.py  # Phase 1: train + evaluate the classifier
+  03_evaluate_phi.py      # Phase 1: score the PHI detector
+tests/                    # pytest smoke tests for the whole pipeline
+```
+
 ## Getting Started
 
-_Setup instructions will be added as the project scaffolding is built (Phase 0)._
+Requires Python 3.10+.
+
+```bash
+# 1. Create a virtual environment and install
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+
+# 2. Run the pipeline
+python scripts/00_generate_data.py      # -> data/raw/notes.csv
+python scripts/01_eda.py                # -> prints stats, saves reports/figures/*.png
+python scripts/02_train_classifier.py   # -> trains model, saves confusion matrix
+python scripts/03_evaluate_phi.py       # -> PHI precision/recall + redaction demo
+
+# 3. Run the tests
+pytest
+```
+
+### A note on the synthetic data
+
+The bundled generator produces cleanly-separable notes, so the classifier and PHI
+detector both score ~1.0 out of the box. That's expected — it confirms the pipeline
+works end-to-end, but it's *too easy* to be a real ML challenge. To make it a genuine
+learning exercise, increase difficulty by adding template variety and noise, overlapping
+vocabulary between note types, typos/abbreviations, and class imbalance — or, better,
+swap in real de-identified data (Synthea/MIMIC) via `data/loader.py`, which is the only
+thing downstream code depends on.
 
 ## Disclaimer
 
