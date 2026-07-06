@@ -1,0 +1,11 @@
+[project]
+name = "healthcare-documentation-assistant"
+version = "0.1.0"
+description = "ML project that analyzes and summarizes healthcare documentation (synthetic/de-identified data only)."
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
