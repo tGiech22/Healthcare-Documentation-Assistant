@@ -93,13 +93,27 @@ pytest
 
 ### A note on the synthetic data
 
-The bundled generator produces cleanly-separable notes, so the classifier and PHI
-detector both score ~1.0 out of the box. That's expected — it confirms the pipeline
-works end-to-end, but it's *too easy* to be a real ML challenge. To make it a genuine
-learning exercise, increase difficulty by adding template variety and noise, overlapping
-vocabulary between note types, typos/abbreviations, and class imbalance — or, better,
-swap in real de-identified data (Synthea/MIMIC) via `data/loader.py`, which is the only
-thing downstream code depends on.
+The generator is deliberately tuned to be a *realistic* ML challenge rather than a toy.
+It applies several difficulty knobs (see `data/generate_synthetic.py`):
+
+- **Class imbalance** — note types have unequal counts (progress notes are most common,
+  pathology least), like a real corpus.
+- **Text noise** (`noise_level`) — typos, dropped characters, and shared abbreviations
+  (pt, hx, dx, w/o …).
+- **Generic headers** — the giveaway type titles are replaced with generic ones most of
+  the time, so the model can't just read the header.
+- **Content bleed** — notes cross-reference other note types, overlapping features
+  between classes.
+- **Label noise** (`label_noise`, default 0.12 for the shipped dataset) — a fraction of
+  labels are flipped to simulate imperfect annotation. This is what makes the task
+  non-trivial: distinct clinical vocabularies are otherwise perfectly separable. The
+  original label is preserved in a `true_type` column for analysis.
+
+With these on, the TF-IDF + logistic-regression baseline lands around **0.87 test
+accuracy** with a genuinely informative confusion matrix — a real baseline to improve on
+(e.g. with a transformer in a later step). For an even more authentic exercise, swap in
+real de-identified data (Synthea/MIMIC) via `data/loader.py`, the only seam downstream
+code depends on.
 
 ## Disclaimer
 
