@@ -46,8 +46,9 @@ def test_classifier_learns_something(notes: pd.DataFrame) -> None:
     pipe = build_pipeline()
     pipe.fit(splits.train["text"], splits.train["note_type"])
     result = evaluate(pipe, splits.test["text"], splits.test["note_type"])
-    # Distinctive per-type vocabulary should make this easy; well above chance (0.2).
-    assert result.accuracy > 0.8
+    # Data is intentionally noisy now, so we don't expect perfection -- just clearly
+    # above the 0.2 chance rate for 5 balanced classes.
+    assert result.accuracy > 0.7
 
 
 def test_phi_detector_has_high_recall(notes: pd.DataFrame) -> None:
