@@ -24,9 +24,18 @@ FIGURES_DIR = REPORTS_DIR / "figures"
 # Canonical file locations --------------------------------------------------
 NOTES_CSV = RAW_DATA_DIR / "notes.csv"
 CLASSIFIER_PATH = MODELS_DIR / "note_type_classifier.joblib"
+VECTOR_INDEX_PATH = PROCESSED_DATA_DIR / "note_index.joblib"
 
 # Reproducibility -----------------------------------------------------------
 RANDOM_SEED = 42
+
+# RAG / retrieval (Phase 2) -------------------------------------------------
+# Our notes are short (a few sentences), so we chunk with small windows and a
+# little overlap. Overlap keeps a fact from being split across a chunk boundary.
+CHUNK_MAX_WORDS = 40
+CHUNK_OVERLAP_WORDS = 10
+# How many chunks to retrieve per query by default.
+RETRIEVAL_TOP_K = 3
 
 # The clinical note types we generate and classify.
 NOTE_TYPES = [
