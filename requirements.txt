@@ -5,5 +5,9 @@ scikit-learn>=1.4
 matplotlib>=3.8
 joblib>=1.3
 
+# LLM summarization (Phase 3)
+anthropic>=0.69          # Claude API client for grounded summarization
+python-dotenv>=1.0       # load ANTHROPIC_API_KEY from a local .env file
+
 # Testing
 pytest>=8.0
