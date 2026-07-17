@@ -11,6 +11,9 @@ dist/
 venv/
 env/
 
+# Secrets (Anthropic API key, etc.) -- never commit
+.env
+
 # Jupyter
 .ipynb_checkpoints/
 
