@@ -39,6 +39,14 @@ class VectorStore:
     def __len__(self) -> int:
         return len(self.chunks)
 
+    def chunks_for_note(self, note_id: object) -> list[Chunk]:
+        """Return every chunk belonging to one note, in original order.
+
+        Used to summarize a single document: gather just that note's chunks and
+        hand them to the generator, rather than retrieving across all patients.
+        """
+        return [c for c in self.chunks if c.note_id == note_id]
+
     def search(self, query_vector: np.ndarray, k: int = 3) -> list[SearchResult]:
         """Return the ``k`` chunks most similar to ``query_vector``.
 
