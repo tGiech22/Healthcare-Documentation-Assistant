@@ -37,6 +37,15 @@ CHUNK_OVERLAP_WORDS = 10
 # How many chunks to retrieve per query by default.
 RETRIEVAL_TOP_K = 3
 
+# LLM summarization (Phase 3) -----------------------------------------------
+# Claude model used to turn retrieved chunks into a grounded summary. Opus is the
+# most capable default; switch to "claude-haiku-4-5" for cheaper/faster runs or
+# "claude-sonnet-5" for a middle ground once the pipeline works.
+SUMMARIZER_MODEL = "claude-opus-4-8"
+# Summaries are short, but adaptive thinking also draws from this budget, so we
+# leave generous headroom. Well under the SDK's non-streaming timeout.
+SUMMARIZER_MAX_TOKENS = 8192
+
 # The clinical note types we generate and classify.
 NOTE_TYPES = [
     "discharge_summary",
