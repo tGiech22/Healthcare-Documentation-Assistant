@@ -57,6 +57,10 @@ class Retriever:
         query_vector = self.embedder.embed([query])
         return self.store.search(query_vector, k=k)
 
+    def chunks_for_note(self, note_id: object) -> list:
+        """All chunks for one note -- the source text for summarizing it."""
+        return self.store.chunks_for_note(note_id)
+
     def save(self, path: Path = VECTOR_INDEX_PATH) -> Path:
         """Persist the whole retriever (fitted embedder + store) to one file."""
         import joblib
