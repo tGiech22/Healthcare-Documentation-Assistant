@@ -11,38 +11,35 @@ Usage:
 
 import sys
 
-from healthcare_assistant.rag.generator import summarize_note
+from healthcare_assistant.rag.generator import summarize_chunks
 from healthcare_assistant.rag.retriever import Retriever
+
+
+def find_note_chunks(retriever, requested):
+    """All chunks for a note, matched by string form so a CLI arg (always a str)
+    still matches an int note_id from the CSV -- and works for string IDs too."""
+    target = str(requested)
+    return [c for c in retriever.store.chunks if str(c.note_id) == target]
 
 
 def main() -> None:
     retriever = Retriever.load()
 
-    if len(sys.argv) > 1:
-        note_id = sys.argv[1]
-    else:
-        # Default to the first indexed note. note_id came from a CSV, so it may
-        # be int-like; match the stored type by taking it straight from a chunk.
-        note_id = retriever.store.chunks[0].note_id
+    # Default to the first indexed note when no id is given.
+    requested = sys.argv[1] if len(sys.argv) > 1 else retriever.store.chunks[0].note_id
 
-    chunks = retriever.chunks_for_note(note_id)
+    chunks = find_note_chunks(retriever, requested)  # one scan, type-agnostic
     if not chunks:
-        # note_ids from the CSV are integers; retry with an int if given a string.
-        try:
-            note_id = int(note_id)
-            chunks = retriever.chunks_for_note(note_id)
-        except (ValueError, TypeError):
-            pass
-    if not chunks:
-        print(f"No note found with note_id={note_id!r}.")
+        print(f"No note found with note_id={requested!r}.")
         return
 
+    note_id = chunks[0].note_id  # the real, correctly-typed id
     print(f"=== Summarizing note {note_id} ({len(chunks)} chunk(s)) ===\n")
     for c in chunks:
         print(f"  source: {c.text}")
     print()
 
-    summary = summarize_note(retriever, note_id)
+    summary = summarize_chunks(chunks)  # reuse what we already fetched
     print(summary)
 
 
