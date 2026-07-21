@@ -55,12 +55,15 @@ class TfidfEmbedder:
     """TF-IDF vectors as a retrieval baseline."""
 
     def __init__(self) -> None:
-        # Same feature choices as the note-type classifier, for consistency.
+        # Feature settings mirror the note-type classifier (lowercase, English
+        # stop words, uni+bigrams, sublinear tf) except for min_df: the
+        # classifier uses min_df=2, but here each chunk is tiny, so we keep
+        # min_df=1 to avoid dropping rare-but-meaningful clinical terms.
         self._vectorizer = TfidfVectorizer(
             lowercase=True,
             stop_words="english",
             ngram_range=(1, 2),
-            min_df=1,  # small corpora: don't drop rare-but-meaningful terms
+            min_df=1,
             sublinear_tf=True,
         )
         self._fitted = False
